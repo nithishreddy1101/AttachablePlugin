@@ -19,14 +19,14 @@
 #define SYSTEM_PLUGIN_ATTACHABLEJOINT_HH_
 
 
-#include <ignition/msgs/empty.pb.h>
+#include <gz/msgs/empty.pb.h>
 
 #include <memory>
 #include <string>
-#include <ignition/transport/Node.hh>
+#include <gz/transport/Node.hh>
 
-#include "ignition/gazebo/Model.hh"
-#include "ignition/gazebo/System.hh"
+#include "gz/sim/Model.hh"
+#include "gz/sim/System.hh"
 
 
 namespace attachable_joint
@@ -51,38 +51,38 @@ namespace attachable_joint
 /// Otherwise, a warning message is printed. Defaults to false.
 
 class AttachableJoint
-    : public ignition::gazebo::System,
-      public ignition::gazebo::ISystemConfigure,
-      public ignition::gazebo::ISystemPreUpdate
+    : public gz::sim::System,
+      public gz::sim::ISystemConfigure,
+      public gz::sim::ISystemPreUpdate
 {
   /// Documentation inherited
   public: AttachableJoint() = default;
 
   /// Documentation inherited
-  public: void Configure(const ignition::gazebo::Entity &_entity,
+  public: void Configure(const gz::sim::Entity &_entity,
                           const std::shared_ptr<const sdf::Element> &_sdf,
-                          ignition::gazebo::EntityComponentManager &_ecm,
-                          ignition::gazebo::EventManager &_eventMgr) final;
+                          gz::sim::EntityComponentManager &_ecm,
+                          gz::sim::EventManager &_eventMgr) final;
 
   /// Documentation inherited
   public: void PreUpdate(
-              const ignition::gazebo::UpdateInfo &_info,
-              ignition::gazebo::EntityComponentManager &_ecm) final;
+              const gz::sim::UpdateInfo &_info,
+              gz::sim::EntityComponentManager &_ecm) final;
 
   /// \brief Callback for detach request topic
-  private: void OnDetachRequest(const ignition::msgs::StringMsg &_msg);
+  private: void OnDetachRequest(const gz::msgs::StringMsg &_msg);
 
   /// \brief Callback for detach request topic
-  private: void OnAttachRequest(const ignition::msgs::StringMsg &_msg);
+  private: void OnAttachRequest(const gz::msgs::StringMsg &_msg);
 
   /// \brief Collision entities that have been designated as contact sensors.
   /// These will be checked against the targetEntities to establish whether this
   /// model is touching the targets
   /*public: std::vector<Entity> attachableJointList;*/
-  public: std::vector<std::pair<ignition::gazebo::Entity, std::string>> attachableJointList;
+  public: std::vector<std::pair<gz::sim::Entity, std::string>> attachableJointList;
 
   /// \brief The model associated with this system.
-  private: ignition::gazebo::Model model;
+  private: gz::sim::Model model;
 
 
   /// \brief Name of Parent Model
@@ -104,7 +104,7 @@ class AttachableJoint
   private: std::string attachtopic;
 
   /// \brief Topic to publish error messages
-  public: std::optional<ignition::transport::Node::Publisher>   error_topic;
+  public: std::optional<gz::transport::Node::Publisher>   error_topic;
 
   /// \brief Whether to suppress warning about missing child model.
   private: bool suppressChildWarning{false};
@@ -113,13 +113,13 @@ class AttachableJoint
   private: bool suppressParentWarning{false};
 
   /// \brief Entity of attachment link in the parent model
-  private: ignition::gazebo::Entity parentLinkEntity{ignition::gazebo::kNullEntity};
+  private: gz::sim::Entity parentLinkEntity{gz::sim::kNullEntity};
 
   /// \brief Entity of attachment link in the child model
-  private: ignition::gazebo::Entity childLinkEntity{ignition::gazebo::kNullEntity};
+  private: gz::sim::Entity childLinkEntity{gz::sim::kNullEntity};
 
   /// \brief Entity of the detachable joint created by this system
-  private: ignition::gazebo::Entity attachableJointEntity{ignition::gazebo::kNullEntity};
+  private: gz::sim::Entity attachableJointEntity{gz::sim::kNullEntity};
 
   /// \brief Whether detachment has been requested
   private: std::atomic<bool> detachRequested{false};
@@ -128,7 +128,7 @@ class AttachableJoint
   private: std::atomic<bool> attachRequested{false};
 
   /// \brief Ignition communication node.
-  public: ignition::transport::Node node;
+  public: gz::transport::Node node;
 
   /// \brief Whether all parameters are valid and the system can proceed
   private: bool validConfig{false};

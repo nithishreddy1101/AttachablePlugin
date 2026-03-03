@@ -23,56 +23,56 @@
 #include <string>
 #include <vector>
 
-#include <ignition/common/Profiler.hh>
-#include <ignition/plugin/Register.hh>
-#include <ignition/transport/Node.hh>
+#include <gz/common/Profiler.hh>
+#include <gz/plugin/Register.hh>
+#include <gz/transport/Node.hh>
 
 #include <sdf/Element.hh>
 
-#include "ignition/gazebo/components/ContactSensor.hh"
-#include "ignition/gazebo/components/ContactSensorData.hh"
-#include "ignition/gazebo/components/Collision.hh"
-#include "ignition/gazebo/components/Link.hh"
-#include "ignition/gazebo/components/Name.hh"
-#include "ignition/gazebo/components/Model.hh"
-#include "ignition/gazebo/components/Sensor.hh"
-#include "ignition/gazebo/components/ParentEntity.hh"
+#include "gz/sim/components/ContactSensor.hh"
+#include "gz/sim/components/ContactSensorData.hh"
+#include "gz/sim/components/Collision.hh"
+#include "gz/sim/components/Link.hh"
+#include "gz/sim/components/Name.hh"
+#include "gz/sim/components/Model.hh"
+#include "gz/sim/components/Sensor.hh"
+#include "gz/sim/components/ParentEntity.hh"
 
-#include "ignition/gazebo/Model.hh"
-#include "ignition/gazebo/Util.hh"
+#include "gz/sim/Model.hh"
+#include "gz/sim/Util.hh"
 
 
 
 /////////////////////////////////////////////////////////////////////////
 #include <vector>
 
-#include <ignition/plugin/Register.hh>
-#include <ignition/transport/Node.hh>
+#include <gz/plugin/Register.hh>
+#include <gz/transport/Node.hh>
 
-#include <ignition/common/Profiler.hh>
+#include <gz/common/Profiler.hh>
 
 #include <sdf/Element.hh>
 
-#include "ignition/gazebo/components/DetachableJoint.hh"
-#include "ignition/gazebo/Model.hh"
-#include "ignition/gazebo/System.hh"
-#include "ignition/gazebo/components/Link.hh"
-#include "ignition/gazebo/components/Model.hh"
-#include "ignition/gazebo/components/Name.hh"
-#include "ignition/gazebo/components/ParentEntity.hh"
-#include "ignition/gazebo/components/Pose.hh"
-#include "ignition/gazebo/Model.hh"
-#include "ignition/gazebo/Util.hh"
+#include "gz/sim/components/DetachableJoint.hh"
+#include "gz/sim/Model.hh"
+#include "gz/sim/System.hh"
+#include "gz/sim/components/Link.hh"
+#include "gz/sim/components/Model.hh"
+#include "gz/sim/components/Name.hh"
+#include "gz/sim/components/ParentEntity.hh"
+#include "gz/sim/components/Pose.hh"
+#include "gz/sim/Model.hh"
+#include "gz/sim/Util.hh"
 
 #include <string>
 #include <iostream>
 
 //#include "/home/david/Attacher/src/linking_try/include/AttachableJoint.hh"
-#include <ignition/gazebo/System.hh>
+#include <gz/sim/System.hh>
 /////////////////////////////////////////////////////
 
-using namespace ignition;
-using namespace gazebo;
+using namespace gz;
+using namespace sim;
 using namespace systems;
 
 class attacher_contact::AttacherContactPrivate
@@ -143,15 +143,15 @@ class attacher_contact::AttacherContactPrivate
   public: bool enabled{false};
 
   /// \brief Entity of attachment link in the parent model
-  private: ignition::gazebo::Entity sensorLinkEntity{ignition::gazebo::kNullEntity};
+  private: gz::sim::Entity sensorLinkEntity{gz::sim::kNullEntity};
 
   /// \brief Entity of attachment link in the child model
-  private: ignition::gazebo::Entity targetLinkEntity{ignition::gazebo::kNullEntity};
+  private: gz::sim::Entity targetLinkEntity{gz::sim::kNullEntity};
 
   /// \brief topic with the links to check if they are touching
   public: std::string attachtopic; 
 
-  public: void OnAttachRequest(const ignition::msgs::StringMsg &_msg);
+  public: void OnAttachRequest(const gz::msgs::StringMsg &_msg);
  
   /// \brief Name of Parent Model
   public: std::string sensorModelName;
@@ -172,7 +172,7 @@ class attacher_contact::AttacherContactPrivate
   
   public: std::atomic<bool> attachRequested{false};
 
-  private: ignition::gazebo::Entity sensorEntity{ignition::gazebo::kNullEntity};
+  private: gz::sim::Entity sensorEntity{gz::sim::kNullEntity};
 
 };
 
@@ -243,7 +243,7 @@ attacher_contact::AttacherContact::AttacherContact()
 void attacher_contact::AttacherContactPrivate::Update(const UpdateInfo &_info,
                                 const EntityComponentManager &_ecm)
 {
-  IGN_PROFILE("attacher_contact::AttacherContactPrivate::Update");
+  GZ_PROFILE("attacher_contact::AttacherContactPrivate::Update");
   
   if (this->enabled == false) {
     return;
@@ -356,7 +356,7 @@ void attacher_contact::AttacherContact::Configure(const Entity &_entity,
 //////////////////////////////////////////////////
 void attacher_contact::AttacherContact::PreUpdate(const UpdateInfo &, EntityComponentManager &_ecm)
 {
-  IGN_PROFILE("attacher_contact::AttacherContact::PreUpdate");
+  GZ_PROFILE("attacher_contact::AttacherContact::PreUpdate");
   if (!this->dataPtr->initialized)
   {
     // We call Load here instead of Configure because we can't be guaranteed
@@ -370,17 +370,17 @@ void attacher_contact::AttacherContact::PreUpdate(const UpdateInfo &, EntityComp
     this->dataPtr->attachRequested = false;
 
     auto modelEntity = _ecm.EntityByComponents(components::Model(),components::Name(this->dataPtr->targetModelName));
-    if (ignition::gazebo::kNullEntity != modelEntity)
+    if (gz::sim::kNullEntity != modelEntity)
     { 
       auto linkEntity = _ecm.EntityByComponents(components::Link(), components::ParentEntity(modelEntity),
           components::Name(this->dataPtr->targetLinkName));
       
-      if (ignition::gazebo::kNullEntity != linkEntity)
+      if (gz::sim::kNullEntity != linkEntity)
       {
         auto linkCollisions = _ecm.ChildrenByComponents(linkEntity, components::Collision());
         for (const Entity entity : linkCollisions) 
         {
-          if (ignition::gazebo::kNullEntity != entity)
+          if (gz::sim::kNullEntity != entity)
           {
             this->dataPtr->targetEntities.push_back(entity);
           }
@@ -394,18 +394,18 @@ void attacher_contact::AttacherContact::PreUpdate(const UpdateInfo &, EntityComp
     // component
 
     modelEntity = _ecm.EntityByComponents(components::Model(),components::Name(this->dataPtr->sensorModelName));
-    if (ignition::gazebo::kNullEntity != modelEntity)
+    if (gz::sim::kNullEntity != modelEntity)
     {
       auto linkEntity = _ecm.EntityByComponents(components::Link(), components::ParentEntity(modelEntity),
           components::Name(this->dataPtr->sensorLinkName));
       
-      if (ignition::gazebo::kNullEntity != linkEntity)
+      if (gz::sim::kNullEntity != linkEntity)
       {
         auto linkCollisions = _ecm.ChildrenByComponents(linkEntity, components::Collision());
 
         for (const Entity entity : linkCollisions) 
         {
-          if ((ignition::gazebo::kNullEntity != entity) && 
+          if ((gz::sim::kNullEntity != entity) && 
               (_ecm.EntityHasComponentType(entity, components::ContactSensorData::typeId)))
           {
             this->dataPtr->collisionEntities.push_back(entity);
@@ -420,7 +420,7 @@ void attacher_contact::AttacherContact::PreUpdate(const UpdateInfo &, EntityComp
 void attacher_contact::AttacherContact::PostUpdate(const UpdateInfo &_info,
                              const EntityComponentManager &_ecm)
 {
-  IGN_PROFILE("attacher_contact::AttacherContact::PostUpdate");
+  GZ_PROFILE("attacher_contact::AttacherContact::PostUpdate");
   if (this->dataPtr->validConfig)
   {
     this->dataPtr->Update(_info, _ecm);
@@ -429,7 +429,7 @@ void attacher_contact::AttacherContact::PostUpdate(const UpdateInfo &_info,
 
 
 
-void attacher_contact::AttacherContactPrivate::OnAttachRequest(const ignition::msgs::StringMsg &msg)
+void attacher_contact::AttacherContactPrivate::OnAttachRequest(const gz::msgs::StringMsg &msg)
 {
     
   
@@ -487,10 +487,10 @@ void attacher_contact::AttacherContactPrivate::OnAttachRequest(const ignition::m
 
 
 
-IGNITION_ADD_PLUGIN(attacher_contact::AttacherContact,
-                    ignition::gazebo::System,
+GZ_ADD_PLUGIN(attacher_contact::AttacherContact,
+                    gz::sim::System,
                     attacher_contact::AttacherContact::ISystemConfigure,
                     attacher_contact::AttacherContact::ISystemPreUpdate,
                     attacher_contact::AttacherContact::ISystemPostUpdate)
 
-IGNITION_ADD_PLUGIN_ALIAS(attacher_contact::AttacherContact, "attacher_contact::AttacherContact")
+GZ_ADD_PLUGIN_ALIAS(attacher_contact::AttacherContact, "attacher_contact::AttacherContact")

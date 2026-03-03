@@ -1,29 +1,31 @@
 #include <vector>
 
-#include <ignition/plugin/Register.hh>
-#include <ignition/transport/Node.hh>
+#include <gz/plugin/Register.hh>
+#include <gz/transport/Node.hh>
 
-#include <ignition/common/Profiler.hh>
+#include <gz/common/Profiler.hh>
 
 #include <sdf/Element.hh>
 
-#include "ignition/gazebo/components/DetachableJoint.hh"
-#include "ignition/gazebo/Model.hh"
-#include "ignition/gazebo/System.hh"
-#include "ignition/gazebo/components/Link.hh"
-#include "ignition/gazebo/components/Model.hh"
-#include "ignition/gazebo/components/Name.hh"
-#include "ignition/gazebo/components/ParentEntity.hh"
-#include "ignition/gazebo/components/Pose.hh"
-#include "ignition/gazebo/Model.hh"
-#include "ignition/gazebo/Util.hh"
+#include "gz/sim/components/DetachableJoint.hh"
+
+#include "gz/sim/components/DetachableJoint.hh"
+#include "gz/sim/Model.hh"
+#include "gz/sim/System.hh"
+#include "gz/sim/components/Link.hh"
+#include "gz/sim/components/Model.hh"
+#include "gz/sim/components/Name.hh"
+#include "gz/sim/components/ParentEntity.hh"
+#include "gz/sim/components/Pose.hh"
+#include "gz/sim/Model.hh"
+#include "gz/sim/Util.hh"
 
 #include <string>
 #include <iostream>
 
 #include "AttachableJoint.hh"
 //#include "/home/david/Attacher/src/linking_try/include/AttachableJoint.hh"
-#include <ignition/gazebo/System.hh>
+#include <gz/sim/System.hh>
 
 using namespace attachable_joint;
 
@@ -34,10 +36,10 @@ using namespace attachable_joint;
 ////////////////////////////////////////////////
 
 /////////////////////////////////////////////////
-void AttachableJoint::Configure(const ignition::gazebo::Entity &_entity,
+void AttachableJoint::Configure(const gz::sim::Entity &_entity,
                const std::shared_ptr<const sdf::Element> &_sdf,
-               ignition::gazebo::EntityComponentManager &_ecm,
-               ignition::gazebo::EventManager &/*_eventMgr*/)
+               gz::sim::EntityComponentManager &_ecm,
+               gz::sim::EventManager &/*_eventMgr*/)
 {
   ///Topics
   if (_sdf->HasElement("attachtopic")) 
@@ -64,12 +66,12 @@ void AttachableJoint::Configure(const ignition::gazebo::Entity &_entity,
 
 ////////////////////////////////////////////////// 
 void AttachableJoint::PreUpdate(
-  const ignition::gazebo::UpdateInfo &/*_info*/,
-  ignition::gazebo::EntityComponentManager &_ecm)
+  const gz::sim::UpdateInfo &/*_info*/,
+  gz::sim::EntityComponentManager &_ecm)
 {
   //ignmsg << "loop"<< std::endl;
-  IGN_PROFILE("AttachableJoint::PreUpdate"); 
-  ignition::msgs::Int32 msg;
+  GZ_PROFILE("AttachableJoint::PreUpdate"); 
+  gz::msgs::Int32 msg;
 
   if (this->not_initialized)
   {
@@ -84,7 +86,7 @@ void AttachableJoint::PreUpdate(
     ///////////////
 
     this->error_topic.reset();
-    this->error_topic = this->node.Advertise<ignition::msgs::Int32>("AttachableJoint/error");
+    this->error_topic = this->node.Advertise<gz::msgs::Int32>("AttachableJoint/error");
 
     ///////////////
 
@@ -105,36 +107,36 @@ void AttachableJoint::PreUpdate(
     }
     if (createNewAttachableJoint == true)
     {
-      ignition::gazebo::Entity pmodelEntity{ignition::gazebo::kNullEntity};
+      gz::sim::Entity pmodelEntity{gz::sim::kNullEntity};
         
-      pmodelEntity = _ecm.EntityByComponents(ignition::gazebo::components::Model(), ignition::gazebo::components::Name(this->parentModelName));
+      pmodelEntity = _ecm.EntityByComponents(gz::sim::components::Model(), gz::sim::components::Name(this->parentModelName));
 
-      if (ignition::gazebo::kNullEntity != pmodelEntity)
+      if (gz::sim::kNullEntity != pmodelEntity)
       {
         this->parentLinkEntity = _ecm.EntityByComponents(
-            ignition::gazebo::components::Link(), ignition::gazebo::components::ParentEntity(pmodelEntity),
-            ignition::gazebo::components::Name(this->parentLinkName));
+            gz::sim::components::Link(), gz::sim::components::ParentEntity(pmodelEntity),
+            gz::sim::components::Name(this->parentLinkName));
       
-        if (ignition::gazebo::kNullEntity != this->parentLinkEntity)
+        if (gz::sim::kNullEntity != this->parentLinkEntity)
         {
           //Hacemos todo con el hijo
-          ignition::gazebo::Entity cmodelEntity{ignition::gazebo::kNullEntity};
+          gz::sim::Entity cmodelEntity{gz::sim::kNullEntity};
           
-          cmodelEntity = _ecm.EntityByComponents(ignition::gazebo::components::Model(), ignition::gazebo::components::Name(this->childModelName));
-          if (ignition::gazebo::kNullEntity != cmodelEntity)
+          cmodelEntity = _ecm.EntityByComponents(gz::sim::components::Model(), gz::sim::components::Name(this->childModelName));
+          if (gz::sim::kNullEntity != cmodelEntity)
           {
             this->childLinkEntity = _ecm.EntityByComponents(
-                ignition::gazebo::components::Link(), ignition::gazebo::components::ParentEntity(cmodelEntity),
-                ignition::gazebo::components::Name(this->childLinkName));
+                gz::sim::components::Link(), gz::sim::components::ParentEntity(cmodelEntity),
+                gz::sim::components::Name(this->childLinkName));
                 
-            if (ignition::gazebo::kNullEntity != this->childLinkEntity)
+            if (gz::sim::kNullEntity != this->childLinkEntity)
             {
               // Attach the models
               // We do this by creating a detachable joint entity.
               this->attachableJointEntity = _ecm.CreateEntity();
               _ecm.CreateComponent(
                   this->attachableJointEntity,
-                  ignition::gazebo::components::DetachableJoint({this->parentLinkEntity,
+                  gz::sim::components::DetachableJoint({this->parentLinkEntity,
                                               this->childLinkEntity, "fixed"})); 
 
               this->attachableJointList.push_back({this->attachableJointEntity, this->attachableJointName});
@@ -209,7 +211,7 @@ void AttachableJoint::PreUpdate(
 }
  
 //////////////////////////////////////////////////
-void AttachableJoint::OnAttachRequest(const ignition::msgs::StringMsg &msg)
+void AttachableJoint::OnAttachRequest(const gz::msgs::StringMsg &msg)
 {
   ignmsg << "El mensaje enviado es: " << msg.data() << std::endl;
   
@@ -288,9 +290,9 @@ void AttachableJoint::OnAttachRequest(const ignition::msgs::StringMsg &msg)
 }
 
 
-IGNITION_ADD_PLUGIN(attachable_joint::AttachableJoint,
-                    ignition::gazebo::System,
+GZ_ADD_PLUGIN(attachable_joint::AttachableJoint,
+                    gz::sim::System,
                     attachable_joint::AttachableJoint::ISystemConfigure,
                     attachable_joint::AttachableJoint::ISystemPreUpdate)
 
-IGNITION_ADD_PLUGIN_ALIAS(AttachableJoint,"attachable_joint::AtachableJoint")
+GZ_ADD_PLUGIN_ALIAS(AttachableJoint,"attachable_joint::AtachableJoint")

@@ -29,7 +29,7 @@ like this:
 ign topic -t /AttachableJoint -m ignition.msgs.StringMsg -p 'data:"[parentModel][ParentLink][ChildModel][ChildLink][attach]"'
 ~~~
 
-You can send it from ROS2, see https://github.com/ignitionrobotics/ros_ign/tree/melodic/ros_ign_bridge
+You can send it from ROS2, see https://github.com/ignitionrobotics/ros_ign/tree/jazzy/ros_gz_bridge
 
 
 
@@ -47,7 +47,7 @@ it should create a directory called "AttachablePlugin"
 
 
 
-I compiled the binary for ROS 2 Foxy (Ubuntu 20.04) you can use .so or compile it yourself. To compile you need ignition from source.
+I compiled the binary for ROS 2 Jazzy (Ubuntu 24.04) you can use .so or compile it yourself. To compile you need gz sim from source.
 
 
 
@@ -89,6 +89,6 @@ make
 Add library:
 ~~~
 cd ign-gazebo/examples/plugins/system_plugin
-export IGN_GAZEBO_SYSTEM_PLUGIN_PATH=`pwd`/build
+export GZ_SIM_SYSTEM_PLUGIN_PATH=`pwd`/build
 ~~~
 
