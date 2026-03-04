@@ -19,14 +19,14 @@ It does not need to be inside a model.
 
 2. Create and Destroy the Link Dinamically
 
-To create a link you have to send a ignition::msgs::StringMsg with this architecture:
+To create a link you have to send a gz::msgs::StringMsg with this architecture:
 [ParentModel][ParentLink][ChildModel][ChildLink][attach]
 
 If you want to detach use [detach]
 
 like this:
 ~~~
-ign topic -t /AttachableJoint -m ignition.msgs.StringMsg -p 'data:"[parentModel][ParentLink][ChildModel][ChildLink][attach]"'
+gz topic -t /AttachableJoint -m gz.msgs.StringMsg -p 'data:"[parentModel][ParentLink][ChildModel][ChildLink][attach]"'
 ~~~
 
 You can send it from ROS2, see https://github.com/ignitionrobotics/ros_ign/tree/jazzy/ros_gz_bridge
@@ -88,7 +88,7 @@ make
 
 Add library:
 ~~~
-cd ign-gazebo/examples/plugins/system_plugin
+cd gz-sim/examples/plugins/system_plugin
 export GZ_SIM_SYSTEM_PLUGIN_PATH=`pwd`/build
 ~~~
 

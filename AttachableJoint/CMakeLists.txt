@@ -1,29 +1,28 @@
 cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
 
-find_package(ignition-cmake2 REQUIRED)
+find_package(gz-cmake3 REQUIRED)
 
 project(AttachableJoint)
+find_package(gz-physics7 REQUIRED)
+set(GZ_MSGS_VER ${gz-physics7_VERSION_MAJOR})
 
-find_package(ignition-physics2 REQUIRED)
-set(IGN_MSGS_VER ${ignition-physics2_VERSION_MAJOR})
-
-find_package(ignition-common3 REQUIRED)
-set(IGN_MSGS_VER ${ignition-common3_VERSION_MAJOR})
-
+find_package(gz-common5 REQUIRED)
+set(GZ_MSGS_VER ${gz-common5_VERSION_MAJOR})
 
 
 
-find_package(ignition-plugin1 REQUIRED COMPONENTS register)
-set(IGN_PLUGIN_VER ${ignition-plugin1_VERSION_MAJOR})
 
-find_package(ignition-gazebo3 REQUIRED)
+find_package(gz-plugin2 REQUIRED COMPONENTS register)
+set(GZ_PLUGIN_VER ${gz-plugin2_VERSION_MAJOR})
+
+find_package(gz-sim8 REQUIRED)
 add_library(AttachableJoint SHARED AttachableJoint.cc AttachableJoint.hh)
 set_property(TARGET AttachableJoint PROPERTY CXX_STANDARD 17)
 target_link_libraries(AttachableJoint
-  PRIVATE ignition-plugin${IGN_PLUGIN_VER}::ignition-plugin${IGN_PLUGIN_VER}
-  PRIVATE ignition-gazebo3::ignition-gazebo3
-  PRIVATE ignition-common3::ignition-common3
-  PRIVATE ignition-physics2::ignition-physics2
+  PRIVATE gz-plugin${GZ_PLUGIN_VER}::gz-plugin${GZ_PLUGIN_VER}
+  PRIVATE gz-sim8::gz-sim8
+  PRIVATE gz-common5::gz-common5
+  PRIVATE gz-physics7::gz-physics7
   )
 
 

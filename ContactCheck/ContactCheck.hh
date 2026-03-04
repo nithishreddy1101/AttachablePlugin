@@ -19,7 +19,7 @@
 #define IGNITION_GAZEBO_SYSTEMS_ATTACHERCONTACT_HH_
 
 #include <memory>
-#include <ignition/gazebo/System.hh>
+#include <gz/sim/System.hh>
 
 
 namespace attacher_contact
@@ -53,10 +53,10 @@ namespace attacher_contact
   /// <enabled> Set this to true so the plugin works from the start and doesn't
   ///           need to be enabled.
   class AttacherContact
-      : public ignition::gazebo::System,
-        public ignition::gazebo::ISystemConfigure,
-        public ignition::gazebo::ISystemPreUpdate,
-        public ignition::gazebo::ISystemPostUpdate
+      : public gz::sim::System,
+        public gz::sim::ISystemConfigure,
+        public gz::sim::ISystemPreUpdate,
+        public gz::sim::ISystemPostUpdate
   {
     /// \brief Constructor
     public: AttacherContact();
@@ -65,19 +65,19 @@ namespace attacher_contact
     public: ~AttacherContact() override = default;
 
     // Documentation inherited
-    public: void Configure(const ignition::gazebo::Entity &_entity,
+    public: void Configure(const gz::sim::Entity &_entity,
                            const std::shared_ptr<const sdf::Element> &_sdf,
-                           ignition::gazebo::EntityComponentManager &_ecm,
-                           ignition::gazebo::EventManager &_eventMgr) override;
+                           gz::sim::EntityComponentManager &_ecm,
+                           gz::sim::EventManager &_eventMgr) override;
 
     /// Documentation inherited
-    public: void PreUpdate(const ignition::gazebo::UpdateInfo &_info,
-                           ignition::gazebo::EntityComponentManager &_ecm) final;
+    public: void PreUpdate(const gz::sim::UpdateInfo &_info,
+                           gz::sim::EntityComponentManager &_ecm) final;
 
     // Documentation inherited
     public: void PostUpdate(
-                const ignition::gazebo::UpdateInfo &_info,
-                const ignition::gazebo::EntityComponentManager &_ecm) override;
+                const gz::sim::UpdateInfo &_info,
+                const gz::sim::EntityComponentManager &_ecm) override;
 
     /// \brief Private data pointer
     private: std::unique_ptr<AttacherContactPrivate> dataPtr;

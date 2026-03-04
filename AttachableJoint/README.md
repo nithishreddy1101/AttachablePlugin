@@ -18,7 +18,7 @@ make
 Add library:
 ~~~
 cd ign-gazebo/examples/plugins/system_plugin
-export IGN_GAZEBO_SYSTEM_PLUGIN_PATH=`pwd`/build
+export GZ_GAZEBO_SYSTEM_PLUGIN_PATH=`pwd`/build
 ~~~
 
 #Include the plugin in the .sdf world.
@@ -39,5 +39,5 @@ like this
 ~~~
 ign topic -t /box2/attach -m ignition.msgs.StringMsg -p 'data:"[parentModel][ParentLink][ChildModel][ChildLink]"'
 ~~~
-You can send it from ROS2, see https://github.com/ignitionrobotics/ros_ign/tree/melodic/ros_ign_bridge
+You can send it from ROS2, see https://github.com/ignitionrobotics/ros_ign/tree/jazzy/ros_gz_bridge
 

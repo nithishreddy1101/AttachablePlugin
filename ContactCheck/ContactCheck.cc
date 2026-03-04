@@ -23,25 +23,25 @@
 #include <string>
 #include <vector>
 
-#include <ignition/common/Profiler.hh>
-#include <ignition/plugin/Register.hh>
-#include <ignition/transport/Node.hh>
+#include <gz/common/Profiler.hh>
+#include <gz/plugin/Register.hh>
+#include <gz/transport/Node.hh>
 
 #include <sdf/Element.hh>
 
-#include "ignition/gazebo/components/ContactSensor.hh"
-#include "ignition/gazebo/components/ContactSensorData.hh"
-#include "ignition/gazebo/components/Collision.hh"
-#include "ignition/gazebo/components/Link.hh"
-#include "ignition/gazebo/components/Name.hh"
-#include "ignition/gazebo/components/Sensor.hh"
+#include "gz/sim/components/ContactSensor.hh"
+#include "gz/sim/components/ContactSensorData.hh"
+#include "gz/sim/components/Collision.hh"
+#include "gz/sim/components/Link.hh"
+#include "gz/sim/components/Name.hh"
+#include "gz/sim/components/Sensor.hh"
 
-#include "ignition/gazebo/Model.hh"
-#include "ignition/gazebo/Util.hh"
+#include "gz/sim/Model.hh"
+#include "gz/sim/Util.hh"
 
 
-using namespace ignition;
-using namespace gazebo;
+using namespace gz;
+using namespace sim;
 using namespace systems;
 
 class attacher_contact::AttacherContactPrivate
@@ -115,7 +115,7 @@ class attacher_contact::AttacherContactPrivate
   /// \brief topic with the links to check if they are touching
   public: std::string attachtopic; 
 
-  public: void OnAttachRequest(const ignition::msgs::StringMsg &_msg);
+  public: void OnAttachRequest(const gz::msgs::StringMsg &_msg);
 
   public: std::string Link1_sensor;
 
@@ -123,7 +123,7 @@ class attacher_contact::AttacherContactPrivate
   
   public: std::atomic<bool> attachRequested{false};
 
-  private: ignition::gazebo::Entity sensorEntity{ignition::gazebo::kNullEntity};
+  private: gz::sim::Entity sensorEntity{gz::sim::kNullEntity};
 
 
 };
@@ -366,7 +366,7 @@ void attacher_contact::AttacherContact::Configure(const Entity &_entity,
 //////////////////////////////////////////////////
 void attacher_contact::AttacherContact::PreUpdate(const UpdateInfo &, EntityComponentManager &_ecm)
 {
-  IGN_PROFILE("attacher_contact::AttacherContact::PreUpdate");
+  GZ_PROFILE("attacher_contact::AttacherContact::PreUpdate");
   if (!this->dataPtr->initialized)
   {
     // We call Load here instead of Configure because we can't be guaranteed
@@ -436,7 +436,7 @@ void attacher_contact::AttacherContact::PreUpdate(const UpdateInfo &, EntityComp
 void attacher_contact::AttacherContact::PostUpdate(const UpdateInfo &_info,
                              const EntityComponentManager &_ecm)
 {
-  IGN_PROFILE("attacher_contact::AttacherContact::PostUpdate");
+  GZ_PROFILE("attacher_contact::AttacherContact::PostUpdate");
   if (this->dataPtr->validConfig)
   {
     this->dataPtr->Update(_info, _ecm);
@@ -445,7 +445,7 @@ void attacher_contact::AttacherContact::PostUpdate(const UpdateInfo &_info,
 
 
 
-void attacher_contact::AttacherContactPrivate::OnAttachRequest(const ignition::msgs::StringMsg &msg)
+void attacher_contact::AttacherContactPrivate::OnAttachRequest(const gz::msgs::StringMsg &msg)
 {
     
   ignmsg << "El mensaje enviado es: " << msg.data() << std::endl;
@@ -491,10 +491,10 @@ void attacher_contact::AttacherContactPrivate::OnAttachRequest(const ignition::m
 
 
 
-IGNITION_ADD_PLUGIN(attacher_contact::AttacherContact,
-                    ignition::gazebo::System,
+GZ_ADD_PLUGIN(attacher_contact::AttacherContact,
+                    gz::sim::System,
                     attacher_contact::AttacherContact::ISystemConfigure,
                     attacher_contact::AttacherContact::ISystemPreUpdate,
                     attacher_contact::AttacherContact::ISystemPostUpdate)
 
-IGNITION_ADD_PLUGIN_ALIAS(attacher_contact::AttacherContact, "attacher_contact::AttacherContact")
+GZ_ADD_PLUGIN_ALIAS(attacher_contact::AttacherContact, "attacher_contact::AttacherContact")

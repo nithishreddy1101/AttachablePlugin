@@ -8,8 +8,6 @@
 #include <sdf/Element.hh>
 
 #include "gz/sim/components/DetachableJoint.hh"
-
-#include "gz/sim/components/DetachableJoint.hh"
 #include "gz/sim/Model.hh"
 #include "gz/sim/System.hh"
 #include "gz/sim/components/Link.hh"
@@ -23,13 +21,16 @@
 #include <string>
 #include <iostream>
 
+#include <gz/msgs/stringmsg.pb.h>
+#include <gz/msgs/int32.pb.h>
+
 #include "AttachableJoint.hh"
 //#include "/home/david/Attacher/src/linking_try/include/AttachableJoint.hh"
 #include <gz/sim/System.hh>
 
 using namespace attachable_joint;
 
-//using namespace ignition;
+//using namespace gzition;
 //using namespace gazebo;
 //using namespace systems;
 
@@ -49,7 +50,7 @@ void AttachableJoint::Configure(const gz::sim::Entity &_entity,
   else
   {
     this->attachtopic = "AttachableJoint";
-    ignmsg << "'attachtopic' is 'AttachableJoint' by default.\n";
+    gzmsg << "'attachtopic' is 'AttachableJoint' by default.\n";
   }
   
   this->suppressChildWarning =
@@ -69,7 +70,7 @@ void AttachableJoint::PreUpdate(
   const gz::sim::UpdateInfo &/*_info*/,
   gz::sim::EntityComponentManager &_ecm)
 {
-  //ignmsg << "loop"<< std::endl;
+  //gzmsg << "loop"<< std::endl;
   GZ_PROFILE("AttachableJoint::PreUpdate"); 
   gz::msgs::Int32 msg;
 
@@ -78,7 +79,7 @@ void AttachableJoint::PreUpdate(
     this->node.Subscribe(
         this->attachtopic, &AttachableJoint::OnAttachRequest, this);
 
-    ignmsg << "AttachableJoint subscribing to messages on "
+    gzmsg << "AttachableJoint subscribing to messages on "
           << "[" << this->attachtopic << "]" << std::endl;
 
     this->not_initialized = false;
@@ -147,7 +148,7 @@ void AttachableJoint::PreUpdate(
             else
             {
               this->attachRequested = false;
-              ignwarn << "Child Link " << this->childLinkName
+              gzwarn << "Child Link " << this->childLinkName
                       << " could not be found.\n";
               msg.set_data(1);
             }
@@ -155,7 +156,7 @@ void AttachableJoint::PreUpdate(
           else if (!this->suppressChildWarning)
           {
             this->attachRequested = false;
-            ignwarn << "Child Model " << this->childModelName
+            gzwarn << "Child Model " << this->childModelName
                     << " could not be found.\n";
             msg.set_data(1);
           }
@@ -164,15 +165,15 @@ void AttachableJoint::PreUpdate(
         else
         {
           this->attachRequested = false;
-          ignwarn << "Parent Link " << this->parentLinkName
+          gzwarn << "Parent Link " << this->parentLinkName
                   << " could not be found.\n";
           msg.set_data(1);
         }
       }
       else if (!this->suppressParentWarning)
       {
-        ignwarn << "Parent Model " << this->parentModelName
-                << " could not be found.\n"; //ignwarnignerr
+        gzwarn << "Parent Model " << this->parentModelName
+                << " could not be found.\n"; //gzwarngzerr
         this->attachRequested = false;
         msg.set_data(1);
       }
@@ -190,12 +191,12 @@ void AttachableJoint::PreUpdate(
       // Detach the models
       int i;
       msg.set_data(1);
-      for(i=0;i<=this->attachableJointList.size();i++)      
+      for(i=0;i<this->attachableJointList.size();i++)      
       {
         if(this->attachableJointList[i].second == this->attachableJointName)
         {
           msg.set_data(0);
-          // igndbg << "Removing entity: " << this->attachableJointList << std::endl;
+          // gzdbg << "Removing entity: " << this->attachableJointList << std::endl;
           _ecm.RequestRemoveEntity(this->attachableJointList[i].first);
 
           this->attachableJointList.erase(this->attachableJointList.begin()+i);
@@ -213,7 +214,7 @@ void AttachableJoint::PreUpdate(
 //////////////////////////////////////////////////
 void AttachableJoint::OnAttachRequest(const gz::msgs::StringMsg &msg)
 {
-  ignmsg << "El mensaje enviado es: " << msg.data() << std::endl;
+  gzmsg << "El mensaje enviado es: " << msg.data() << std::endl;
   
   // [parentModel][ParentLink][ChildModel][ChildLink]
   //Now the Link must be nammed AttachableLink_Name or wont work
@@ -256,7 +257,7 @@ void AttachableJoint::OnAttachRequest(const gz::msgs::StringMsg &msg)
   {
     this->attachRequested = true;
 
-    ignmsg << "PM: " <<this->parentModelName <<" PL: "<< this->parentLinkName <<" CM: "<< this->childModelName <<" CL: "<< this->childLinkName 
+    gzmsg << "PM: " <<this->parentModelName <<" PL: "<< this->parentLinkName <<" CM: "<< this->childModelName <<" CL: "<< this->childLinkName 
            << std::endl << "\n\n\n";
 
   }
@@ -266,12 +267,12 @@ void AttachableJoint::OnAttachRequest(const gz::msgs::StringMsg &msg)
     {
       this->detachRequested = true;
 
-      ignmsg << "PM: " <<this->parentModelName <<" PL: "<< this->parentLinkName <<" CM: "<< this->childModelName <<" CL: "<< this->childLinkName 
+      gzmsg << "PM: " <<this->parentModelName <<" PL: "<< this->parentLinkName <<" CM: "<< this->childModelName <<" CL: "<< this->childLinkName 
             << std::endl << "\n\n\n";
     }
     else
     {
-      ignmsg << "There is no AttachableJoint created yet";
+      gzmsg << "There is no AttachableJoint created yet";
     }
   }
   
@@ -279,11 +280,11 @@ void AttachableJoint::OnAttachRequest(const gz::msgs::StringMsg &msg)
   if ( (this->parentLinkName.find("AttachableLink") != -1) && (this->childLinkName.find("AttachableLink") != -1) ) {
 
     this->attachRequested = true;
-    ignmsg << "PM: " <<this->parentModelName <<" PL: "<< this->parentLinkName <<" CM: "<< this->childModelName <<" CL: "<< this->childLinkName 
+    gzmsg << "PM: " <<this->parentModelName <<" PL: "<< this->parentLinkName <<" CM: "<< this->childModelName <<" CL: "<< this->childLinkName 
            << std::endl;
   } 
   else {
-      ignerr << "parent link or child link are not AttachableLinks"<< std::endl;
+      gzerr << "parent link or child link are not AttachableLinks"<< std::endl;
   }
   */
 
